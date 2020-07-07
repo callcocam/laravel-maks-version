@@ -21,6 +21,7 @@ class InputProcessStepStore extends FormRequest
         return true;
     }
 
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -33,10 +34,9 @@ class InputProcessStepStore extends FormRequest
             'provider_id'   =>['required'],
             'order_id'      =>['required']
         ];
-
         if($this->id){
             $rules['number_of_pieces']  = ['required'];
-            $rules['piece_value']       = ['required'];
+            $rules['piece_value']       = ['required','gtzero'];
         }
         return $rules;
     }
@@ -44,7 +44,8 @@ class InputProcessStepStore extends FormRequest
     public function messages()
     {
         return [
-            'required'=>"Campo obrigatório"
+            'required'=>"Campo obrigatório",
+            'gtzero'=>"Campo deve ser maior que zero",
         ];
     }
 }

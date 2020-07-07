@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(AutoRouteServiceProvider::class);
         $this->app->register(MenuServiceProvider::class);
         $this->app->register(ShinobiServiceProvider::class);
+        $this->app->register(CustomRulesServiceProvider::class);
         $this->app->register(\App\Suports\Notify\NotifyServiceProvider::class);
 
         include app_path("Suports/helpers.php");

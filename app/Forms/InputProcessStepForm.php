@@ -50,14 +50,26 @@ class InputProcessStepForm extends AbstractForm
             $number_of_pieces = $currentStage->number_of_pieces - $currentStage->number_of_damaged_pieces;
             //$piece_value = $currentStage->piece_value;
         }
+        if(auth()->user()->hasRole('corte')){
+            $this->add('number_of_pieces', 'text', [
+                'label' => 'Número de peças na entrada',
+                'default_value' => $number_of_pieces
+            ]);
+        }
+        else{
+            $this->add('number_of_pieces', 'hidden', [
+                'default_value' => $number_of_pieces
+            ]);
+        }
 
-        $this->add('number_of_pieces', 'hidden', [
-            'default_value' => $number_of_pieces
-        ])->add('piece_value', 'hidden', [
+        $this->add('piece_value', 'hidden', [
             'default_value' => 0
         ])->add('date', 'hidden', [
             'default_value' => date("Y-m-d")
-        ])->add('number_of_damaged_pieces', 'hidden', [
+        ]) ->add('status', 'hidden',
+            [
+                'default_value' => 'draft',
+            ])->add('number_of_damaged_pieces', 'hidden', [
             'default_value' => 0
         ])->add('stage_id', 'entity', [
             'class' => Stage::class,
@@ -70,7 +82,7 @@ class InputProcessStepForm extends AbstractForm
                 ])->get();
                 // If query builder option is not provided, all data is fetched
                 return $stage->select(["id",app('db')->raw('CONCAT(ordering," - ", name) AS full_name')])
-                ->whereNotIn('id', $params->toArray())->orderBy('ordering','ASC');
+                    ->whereNotIn('id', $params->toArray())->orderBy('ordering','ASC');
             }
         ])
             ->add('provider_id', 'entity', [
@@ -83,15 +95,15 @@ class InputProcessStepForm extends AbstractForm
                 'default_value' => today()->addDays($this->request->get('delivery', 1))->format("Y-m-d"),
             ])
             //->addDescription()
-            ->add('status', 'choice', [
-                'choices' => [
-                    'draft' => "Abrir"
-                ],
-                'default_value' => 'draft',
-                'label' => 'Situação Da Etapa',
-                'expanded' => true,
-            ])
-            ->addSubmit();
+//            ->add('status', 'choice', [
+//                'choices' => [
+//                    'draft' => "Abrir"
+//                ],
+//                'default_value' => 'draft',
+//                'label' => 'Situação Da Etapa',
+//                'expanded' => true,
+//            ])
+            ->addSubmit("Iniciar Etapa");
     }
 
 
@@ -134,6 +146,10 @@ class InputProcessStepForm extends AbstractForm
                 [
                     'default_value' => form_read($piece_fabric),
                 ])
+            ->add('status', 'hidden',
+                [
+                    'value' => 'published',
+                ])
             ->add('piece_current_value', 'hidden',
                 [
                     'default_value' => form_read($piece_value_amount),
@@ -146,29 +162,41 @@ class InputProcessStepForm extends AbstractForm
 //                    'readonly' => true
 //                ],
 //            ])
-            /*->add('piece_fabric_value', 'text', [
-                'label' => 'Valor total do tecido',
-                'default_value' => form_read($piece_fabric),
-                'attr' => [
-                    'readonly' => true
-                ],
-            ])*/
-           /* ->add('piece_current_value', 'text', [
-                'label' => 'Total do valor do serviço por peça',
+        /*->add('piece_fabric_value', 'text', [
+            'label' => 'Valor total do tecido',
+            'default_value' => form_read($piece_fabric),
+            'attr' => [
+                'readonly' => true
+            ],
+        ])*/
+        /* ->add('piece_current_value', 'text', [
+             'label' => 'Total do valor do serviço por peça',
+             'default_value' => form_read($piece_value_amount),
+             'attr' => [
+                 'readonly' => true
+             ],
+         ])*/
+
+        if(auth()->user()->hasRole('gerente')){
+            $this->add('number_of_pieces', 'text', [
+                'label' => 'Número de peças na entrada',
                 'default_value' => form_read($piece_value_amount),
                 'attr' => [
                     'readonly' => true
                 ],
-            ])*/
-        $this->add('number_of_pieces', 'text', [
-                'label' => 'Número de peças na entrada',
-            'default_value' => form_read($piece_value_amount),
             ]);
+        }
+        else{
+
+            $this->add('number_of_pieces', 'hidden', [
+                'default_value' => form_read($piece_value_amount),
+            ]);
+        }
 
         $this->add('delivery_date', 'date', [
-                'label' => 'Data prevista para entrega',
-                'default_value' => today()->format("Y-m-d"),
-            ])
+            'label' => 'Data prevista para entrega',
+            'default_value' => today()->format("Y-m-d"),
+        ])
             ->add('number_of_damaged_pieces', 'text', [
                 'label' => 'Número de peças danificadas'
             ])
@@ -176,13 +204,13 @@ class InputProcessStepForm extends AbstractForm
                 'label' => 'Valor cobrado por peça'
             ])
             //->addDescription()
-            ->add('status', 'choice', [
+           /* ->add('status', 'choice', [
                 'choices' => $this->status(),
                 'default_value' => 'draft',
                 'label' => 'Situação Da Etapa',
                 'expanded' => true,
-            ])
-            ->addSubmit();
+            ])*/
+            ->addSubmit("Finalizar Etapa");
     }
 
     private function status(){
@@ -191,16 +219,16 @@ class InputProcessStepForm extends AbstractForm
         if($this->getModel()->number_of_pieces && $this->getModel()->piece_value){
             return [
                 'draft' => "Aberto",
-               // 'pause' => "Pausado",
+                // 'pause' => "Pausado",
                 //'feedstock' => "Aguardando Matéria Prima",
                 'published' => "Finalizado",
-                //'payment' => "Gerar Pagamento",
+                'payment' => "Gerar Pagamento",
             ];
         }
         return [
             'draft' => "Aberto",
             //'pause' => "Pausado",
-           // 'feedstock' => "Aguardando Matéria Prima",
+            // 'feedstock' => "Aguardando Matéria Prima",
             'published' => "Finalizado",
         ];
     }
@@ -256,7 +284,6 @@ class InputProcessStepForm extends AbstractForm
                 ],
                 'label' => 'Situação Da Etapa',
                 'expanded' => true,
-            ])
-            ->addSubmit();
+            ]);
     }
 }

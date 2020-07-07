@@ -57,7 +57,7 @@ class InputProcessStep extends Model
         return check_status($currentData->status,[
             'payment'=>"Visualizar Etapa",
             'published'=>"Finalizada",
-            'draft'=>" Manejar etapa",
+            'draft'=>" Finalizada Etapa",
             'pause'=>"Retornar etapa",
             'feedstock'=>"Retornar etapa",
             'deleted'=>"Folder-Trash"

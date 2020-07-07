@@ -38,9 +38,7 @@
                        <div class="col">
                            <b>Valor atual da peça:</b>{{ $rows->input_piece_value($rows) }} |
                            <b>Valor de serviços:</b>{{ $rows->input_total($rows) }} |
-                           <b>Valor de tecidos:</b>{{ $rows->price() }} |
-                           <b>Valor de aviamento:</b>{{ $rows->price(false) }}<br>
-                           <b>Valor total:</b>{{ Calcular(Calcular($rows->input_total($rows), $rows->input_total($rows),"+"), $rows->price(false),"+") }}<br>
+                           <b>Valor total:</b>{{ Calcular(Calcular($rows->input_total($rows), $rows->price(),"+"), $rows->price(false),"+") }}<br>
                            <b>Observações:</b>{{ $rows->observation }}<br>
                            <b>Descrição:</b>{{ $rows->description }}
                        </div>

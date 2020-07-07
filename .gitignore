@@ -1,6 +1,8 @@
 /node_modules
 /public/hot
 /public/storage
+/public/_cdn
+/.docker/dbdata
 /storage/*.key
 /vendor
 /.idea

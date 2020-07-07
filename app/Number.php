@@ -54,4 +54,9 @@ class Number extends Model
     {
         $query->orderBy('name','ASC');
     }
+
+    public function order_items(){
+
+        return $this->hasOne(GridOrderItem::class);
+    }
 }

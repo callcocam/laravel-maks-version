@@ -26,13 +26,14 @@ class InputProcessStepObserver
      */
     public function updated(InputProcessStep $inputProcessStep)
     {
-        if($inputProcessStep->status == 'payment'){
+        //payment
+
+        if($inputProcessStep->status == 'published'){
             $quantity = form_read( $inputProcessStep->number_of_pieces);
             if($inputProcessStep->number_of_damaged_pieces){
                 $quantity = Calcular(form_read( $inputProcessStep->number_of_pieces),form_read( $inputProcessStep->number_of_damaged_pieces), '-');
             }
             $price = Calcular(form_read( $inputProcessStep->piece_value),$quantity, '*');
-
             if(!$inputProcessStep->payment()->count()){
                 $inputProcessStep->payment()->getRelated()->saveBy([
                     'input_process_step_id'=>$inputProcessStep->id,

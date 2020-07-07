@@ -4,7 +4,7 @@
             <span class="ul-widget-s7__badge ul-widget-card__dot">
                     <a data-toggle="tooltip"
                        title="{{ $input->inputStatusMessage($input,$rows) }}"
-                        href="{{ route('admin.inputs.edit',[
+                       href="{{ route('admin.inputs.edit',[
                             'ordem_servicos_etapas_entrada'=>$input->id,
                             'ordem_servico'=>$input->order_id
                             ]) }}">
@@ -21,9 +21,9 @@
                         <b>Número de peças na entrada:</b> {{ $input->number_of_pieces }}<br>
                         <b>Número de peças danificadas:</b> {{ $input->number_of_damaged_pieces }}<br>
                         @if($input->piece_value)
-                        <b>Número de peças na saida:</b> {{ (int)Calcular(form_read( $input->number_of_pieces),form_read( $input->number_of_damaged_pieces), '-') }}<br>
-                        @endif
-                        @if($input->piece_value)
+                                <b>Número de peças na saida:</b> {{ (int)Calcular(form_read( $input->number_of_pieces),form_read( $input->number_of_damaged_pieces), '-') }}<br>
+                            @endif
+                            @if($input->piece_value)
                                 <b>Valor cobrado por peça:</b> {{form_read( $input->piece_value) }}<br>
                                 @if($input->number_of_damaged_pieces)
                                     <b>Valor desconto por avaria:</b>
@@ -41,23 +41,25 @@
                 <div class="rows">
                     <div class="col">
 
-                       <a href="{{ route('admin.inputs.edit',[
+                        @if($input->inputStatusChek($input,'published'))
+                            @if($input->payment && isset($input->payment->id))
+                                <a target="_blank" href="{{ route('admin.inputs.print',$input->id) }}" class=" btn btn-warning btn-sm"> <i class="fa fa-print text-white"></i> Imprimir etapa</a>
+                            @else
+                                <a href="{{ route('admin.inputs.edit',[
                             'ordem_servicos_etapas_entrada'=>$input->id,
                             'ordem_servico'=>$input->order_id
                             ]) }}" class=" btn btn-{{ $input->inputStatusClass($input) }} btn-sm"> <i class="i-{{ $input->inputStatusBtnIcon($input) }} text-white"></i> {{ $input->inputStatusBtnText($input) }}</a>
-                            @if($input->inputStatusChek($input,'payment'))
-                                @if(!$input->payment)
-                                <a href="{{ route('admin.payments.edit',$input->payment->id) }}" class=" btn btn-primary btn-sm"> <i class="i-Money text-white"></i> Visualizar pagamento</a>
-                                @endif
-                            @else
-                            @if(!$input->inputStatusChek($input,'published'))
-                            <a href="{{ route('admin.order-delete-stage.destroy',$input->id) }}" class=" btn btn-danger btn-sm delete"> <i class="i-Delete-File text-white"></i> Excluir etapa</a>
                             @endif
-                            @endif
-                            <a target="_blank" href="{{ route('admin.inputs.print',$input->id) }}" class=" btn btn-warning btn-sm"> <i class="fa fa-print text-white"></i> Imprimir etapa</a>
+                        @else
+                            <a href="{{ route('admin.inputs.edit',[
+                            'ordem_servicos_etapas_entrada'=>$input->id,
+                            'ordem_servico'=>$input->order_id
+                            ]) }}" class=" btn btn-{{ $input->inputStatusClass($input) }} btn-sm"> <i class="i-{{ $input->inputStatusBtnIcon($input) }} text-white"></i> {{ $input->inputStatusBtnText($input) }}</a>
+
+                        @endif
                     </div>
                 </div>
-               </div>
+            </div>
         </div>
     </div>
 @endforeach
@@ -67,7 +69,7 @@
             $('[data-toggle="tooltip"]').tooltip();
 
             $('.delete').click(function () {
-               return confirm("Confirmar a operação!");
+                return confirm("Confirmar a operação!");
             })
         })
     </script>

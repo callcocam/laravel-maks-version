@@ -11,7 +11,23 @@ window.Vue = require('vue');
 import Notifications from 'vue-notification'
 
 Vue.use(Notifications)
-
+var markers = [
+    {
+        coords:{lat:42.4668,lng:-70.9495},
+        iconImage:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+        content:'<h1>Lynn MA</h1>'
+    },
+    {
+        coords:{lat:42.8584,lng:-70.9300},
+        content:'<h1>Amesbury MA</h1>'
+    },
+    {
+        coords:{lat:42.7762,lng:-71.0773}
+    }
+];
+Object.values(markers).map(marke=>{
+    console.log(marke)
+})
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

@@ -47,6 +47,7 @@ abstract class AbstractController extends Controller
     public function index()
     {
 
+
        // event(new MetricsEvent('hello world'));
         $this->results['user'] = Auth::user();
         $this->results['tenant'] = get_tenant();

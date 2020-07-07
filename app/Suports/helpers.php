@@ -355,3 +355,24 @@ if (!function_exists('Calcular')) {
         return $ret;
     }
 }
+
+//echo ucsentence(strtolower("improved method of capitalizing first characters of sentences. the first two manipulations (double spaces & all caps) are optional so? can be removed without harm."));
+if (!function_exists('ucsentence')) {
+    function ucsentence($str)
+    {
+        if ($str) {
+            $str = preg_replace('/' . chr(32) . chr(32) . '+/', chr(32), $str);
+            if (($x = substr($str, 0, 10)) && ($x == strtoupper($x))) $str = strtolower($str);
+            $na = array('. ', '! ', '? '); // pontuação que sera seguida de uma letra maiuscula
+            foreach ($na as $n) {
+                if (strpos($str, $n) !== false) {
+                    $sa = explode($n, $str);
+                    foreach ($sa as $s) $ca[] = ucfirst($s);
+                    $str = implode($n, $ca);
+                    unset($ca);
+                }
+            }
+            return ucfirst(trim($str));
+        }
+    }
+}

@@ -71,7 +71,7 @@ class OrderForm extends AbstractForm
             ])
             ->addDescription('observation', 'Observações',[],false)
             ->addDescription('description', 'Descrição',[],false)
-            ->getStatus("Ativo", "Inativo")
+            ->getStatus("Aberta", "Finalizada")
             ->addSubmit();
 
         parent::buildForm();
