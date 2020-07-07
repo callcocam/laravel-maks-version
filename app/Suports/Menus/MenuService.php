@@ -60,20 +60,20 @@ class MenuService
                 'label'=>"Controle De Estoque",
             ],
             [
-                'cannot'=>['admin.stages.index'],
-                'liClass'=>'nav-item',
-                'aClass'=>'nav-item-hold',
-                'iconClass'=>'nav-icon i-Check',
-                'route'=>'admin.stages.index',
-                'label'=>"Etapas",
-            ],
-            [
                 'cannot'=>['admin.orders.index'],
                 'liClass'=>'nav-item',
                 'aClass'=>'nav-item-hold',
                 'iconClass'=>'nav-icon i-Gear',
                 'route'=>'admin.orders.index',
                 'label'=>"OS/Serviço",
+            ],
+            [
+                'cannot'=>['admin.stages.index'],
+                'liClass'=>'nav-item',
+                'aClass'=>'nav-item-hold',
+                'iconClass'=>'nav-icon i-Check',
+                'route'=>'admin.stages.index',
+                'label'=>"Etapas",
             ],
             [
                 'cannot'=>['admin.payments.index'],

@@ -62,6 +62,7 @@ class Order extends Model
 
         $this->defaultOptions['title'] = "Lista de ordems de serviço";
         $this->defaultOptions['endpoint'] = "orders";
+        $this->defaultOptions['column'] = "codigo";
         $this->headers = [
             ID::make('id')->hiddenList()->hiddenShow()->render(),
             TEXT::make('codigo')->label("Código")->sortable()->render(),
@@ -169,15 +170,13 @@ class Order extends Model
             $items = $this->hasMany(Item::class)->whereNotNull('aviament_id')->get();
         endif;
         if ($items) {
-
             foreach ($items as $value) {
                 if($type):
-                    $amount = Calcular($value->amount, form_read($value->fabric->price), '+');
-                else:
-                    $amount = Calcular($value->amount, form_read($value->aviament->price), '+');
+                    $qtd = Calcular($value->fabric->width,$value->fabric->metreage, "*");
+                    $amount = Calcular(form_read($qtd), form_read($value->fabric->price), '*');
+                 else:
+                    $amount = Calcular(form_read($value->amount), form_read($value->aviament->price), '*');
                 endif;
-
-
                 $piece = Calcular($piece, $amount, '+');
             }
         }
@@ -214,6 +213,23 @@ class Order extends Model
 
         return "0,0";
     }
+
+
+    public function input_piece_value_services($rows)
+    {
+        $InputProcessStep = $this->input_piece_value($rows);
+
+        $Input = $rows->input()->first();
+
+        $InputProcessSTotal =  Calcular(form_read($InputProcessStep),form_read( $Input->number_of_pieces + $Input->number_of_damaged_pieces), '*');
+
+
+        if($InputProcessSTotal)
+            return form_read($InputProcessSTotal);
+
+        return "0,0";
+    }
+
     public function input_total($rows)
     {
         $Input = $this->input()->first();
@@ -226,6 +242,30 @@ class Order extends Model
 
 
         return "0,0";
+    }
+
+    public function input_total_amount($rows)
+    {
+
+        $total = Calcular($this->price(true), $this->price(false), "+");
+
+        $input_pice_value_services = $this->input_piece_value_services($rows);
+
+
+        return Calcular($input_pice_value_services,$total, '+');
+    }
+
+    /**
+     * Valor atual da peça dividindo o tatal de aviamento mas os tecidos mas os serviços
+     * @param $rows
+     * @return string
+     */
+    public function input_piece_value_items($rows)
+    {
+        $Input = $rows->input()->first();
+         $number_of_pieces=form_read( $Input->number_of_pieces + $Input->number_of_damaged_pieces);
+        $input_fabric_aviament_services = $this->input_total_amount($rows);
+        return Calcular(form_read($input_fabric_aviament_services),$number_of_pieces, "/");
     }
 
     public function inputStage($ordem_servico)
@@ -256,6 +296,28 @@ class Order extends Model
     public function output()
     {
         return $this->belongsTo(OutputProcessStep::class);
+    }
+
+    /**
+     * Valor da peça avaria com bases de valores na etapa
+     * @param $rows
+     * @param $Input
+     * @return string
+     */
+    public function input_varia_value($rows, $Input){
+
+        $total = Calcular($rows->price(true), $rows->price(false), "+");
+
+        $number_of_pieces = Calcular($Input->number_of_pieces,$Input->number_of_damaged_pieces, '+');
+
+        $value_pieces = Calcular(form_read($total),$number_of_pieces, '/');
+
+        $piece_value = Calcular(form_read($value_pieces),form_read($Input->piece_value), "+");
+
+        return  sprintf("%s X %s = %s",
+            form_read( $Input->number_of_damaged_pieces ),
+            form_read( $piece_value ),
+            Calcular(form_read( $Input->number_of_damaged_pieces ),form_read( $piece_value), '*'));
     }
 
 }

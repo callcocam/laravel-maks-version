@@ -182,7 +182,7 @@ class InputProcessStepForm extends AbstractForm
                 'label' => 'Número de peças na entrada',
                 'default_value' => form_read($piece_value_amount),
                 'attr' => [
-                    'readonly' => true
+                    'readonly' => false
                 ],
             ]);
         }

@@ -57,7 +57,7 @@ class InputProcessStep extends Model
         return check_status($currentData->status,[
             'payment'=>"Visualizar Etapa",
             'published'=>"Finalizada",
-            'draft'=>" Finalizada Etapa",
+            'draft'=>" Finalizar Etapa",
             'pause'=>"Retornar etapa",
             'feedstock'=>"Retornar etapa",
             'deleted'=>"Folder-Trash"
@@ -131,6 +131,10 @@ class InputProcessStep extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function input_varia_value($rows)
+    {
+        return $rows->order->input_varia_value($rows->order,$rows);
+    }
     public function init()
     {
         // TODO: Implement init() method.
