@@ -150,10 +150,7 @@ class InputProcessStepForm extends AbstractForm
                 [
                     'value' => 'published',
                 ])
-            ->add('piece_current_value', 'hidden',
-                [
-                    'default_value' => form_read($piece_value_amount),
-                ]);
+            ->add('piece_current_value', 'hidden');
 //
 //            ->add('fabric_desc', 'text', [
 //                'label' => 'Produto',
@@ -193,7 +190,9 @@ class InputProcessStepForm extends AbstractForm
             ]);
         }
 
-        $this->add('delivery_date', 'date', [
+        $this ->add('current_value_pecie', 'text',[
+            'default_value'=>$piece_amount->total
+        ])->add('delivery_date', 'date', [
             'label' => 'Data prevista para entrega',
             'default_value' => today()->format("Y-m-d"),
         ])

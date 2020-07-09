@@ -29,7 +29,7 @@
                                     <b>Valor desconto por avaria:</b>
                                     {{ $rows->input_varia_value($rows, $input) }}<br>
                                     <b>Valor Total a pagar da etapa:</b>
-                                    {{ Calcular(form_read( $input->piece_value),Calcular(form_read( $input->number_of_pieces),form_read( $input->number_of_damaged_pieces), '-'), '*') }}<br>
+                                    {{ Calcular(Calcular(form_read( $input->piece_value),form_read( $input->number_of_pieces), '*'),form_read( $rows->input_varia_value_discount($rows, $input)), '-') }}<br>
                                 @else
                                     <b>Valor Total a pagar da etapa:</b>
                                     {{ Calcular(form_read( $input->piece_value),form_read( $input->number_of_pieces), '*') }}<br>

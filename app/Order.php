@@ -174,7 +174,7 @@ class Order extends Model
                 if($type):
                     $qtd = Calcular($value->fabric->width,$value->fabric->metreage, "*");
                     $amount = Calcular(form_read($qtd), form_read($value->fabric->price), '*');
-                 else:
+                else:
                     $amount = Calcular(form_read($value->amount), form_read($value->aviament->price), '*');
                 endif;
                 $piece = Calcular($piece, $amount, '+');
@@ -205,23 +205,31 @@ class Order extends Model
 
     public function input_piece_value($rows)
     {
-         $InputProcessStep = InputProcessStep::query()->select(DB::raw('SUM(piece_value) as total'))->where([
+        $InputProcessStep = InputProcessStep::query()->select(DB::raw('SUM(piece_value) as total'))->where([
             "order_id" =>$rows->id
         ])->first();
         if($InputProcessStep)
-          return form_read($InputProcessStep->total);
+            return form_read($InputProcessStep->total);
 
         return "0,0";
     }
 
 
-    public function input_piece_value_services($rows)
+    public function input_piece_value_services($rows, $Input=null)
     {
-        $InputProcessStep = $this->input_piece_value($rows);
+        $InputProcessStep = 0;
+        if($Input){
+            $InputProcessStep = $Input->current_value_pecie;
+        }
+        else{
+            $Input = $rows->input()->first();
+            if($Input)
+                $InputProcessStep = $Input->current_value_pecie;
+        }
 
-        $Input = $rows->input()->first();
-
-        $InputProcessSTotal =  Calcular(form_read($InputProcessStep),form_read( $Input->number_of_pieces + $Input->number_of_damaged_pieces), '*');
+        $InputProcessSTotal=0;
+        if($Input)
+            $InputProcessSTotal =  Calcular(form_read($InputProcessStep),form_read( $Input->number_of_pieces + $Input->number_of_damaged_pieces), '*');
 
 
         if($InputProcessSTotal)
@@ -263,7 +271,10 @@ class Order extends Model
     public function input_piece_value_items($rows)
     {
         $Input = $rows->input()->first();
-         $number_of_pieces=form_read( $Input->number_of_pieces + $Input->number_of_damaged_pieces);
+        if(!$Input)
+            return '0,00';
+
+        $number_of_pieces=form_read( $Input->number_of_pieces + $Input->number_of_damaged_pieces);
         $input_fabric_aviament_services = $this->input_total_amount($rows);
         return Calcular(form_read($input_fabric_aviament_services),$number_of_pieces, "/");
     }
@@ -306,18 +317,35 @@ class Order extends Model
      */
     public function input_varia_value($rows, $Input){
 
-        $total = Calcular($rows->price(true), $rows->price(false), "+");
 
-        $number_of_pieces = Calcular($Input->number_of_pieces,$Input->number_of_damaged_pieces, '+');
-
-        $value_pieces = Calcular(form_read($total),$number_of_pieces, '/');
-
-        $piece_value = Calcular(form_read($value_pieces),form_read($Input->piece_value), "+");
+        $piece_value = $rows->input_varia_value_discount($rows, $Input);
 
         return  sprintf("%s X %s = %s",
             form_read( $Input->number_of_damaged_pieces ),
             form_read( $piece_value ),
-            Calcular(form_read( $Input->number_of_damaged_pieces ),form_read( $piece_value), '*'));
+            $piece_value);
     }
 
+    /**
+     * Valor da peça avaria com bases de valores na etapa
+     * @param $rows
+     * @param $Input
+     * @return string
+     */
+    public function input_varia_value_discount($rows, $Input){
+
+        $total = Calcular($rows->price(true), $rows->price(false), "+");
+
+        $number_of_pieces = Calcular($Input->number_of_pieces,$Input->number_of_damaged_pieces, '+');
+
+        $services = $rows->input_piece_value_services($rows, $Input);
+
+        $total_services =  Calcular(form_read($total), form_read($services), "+");
+
+        $value_pieces = Calcular(form_read($total_services),$number_of_pieces, '/');
+
+        $piece_value = form_read($value_pieces);
+
+        return  $piece_value;
+    }
 }

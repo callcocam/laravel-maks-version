@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class InputProcessStep extends Model
 {
@@ -15,7 +16,7 @@ class InputProcessStep extends Model
     protected $table = "input_process_steps";
 
     protected $fillable = [
-        'stage_id','provider_id','order_id','date','number_of_pieces','expected_delivery_date','number_of_damaged_pieces','piece_value','status','description'
+        'stage_id','provider_id','order_id','date','number_of_pieces','expected_delivery_date','number_of_damaged_pieces','piece_value','current_value_pecie','status','description'
     ];
     protected $casts = [
         'piece_value' => 'float',
@@ -146,4 +147,5 @@ class InputProcessStep extends Model
     {
         // TODO: Implement initFilter() method.
     }
+
 }

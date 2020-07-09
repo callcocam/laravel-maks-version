@@ -13,6 +13,8 @@ class OutputProcessStepForm extends AbstractForm
         if($this->getModel()){
             $this->add('id', 'hidden');
         }
+
+
         $this
             ->add('stage_id', 'hidden',[
                 'default_value'=>$this->request->get('stage')
